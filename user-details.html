@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>users</title>
+    <script src="UlLi.js"></script>
+    <style>
+        body{
+            margin: 0;
+            background-color: #aff5f5;
+        }
+        .main{
+            height: 60vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+        }
+        .info{
+            width: 80vw;
+            height: 10vh;
+        }
+        .posts{
+            height: 30vw;
+            display: flex;
+            flex-wrap: wrap ;
+            justify-content: space-around;
+            align-items: flex-start;
+            align-content: space-around;
+            background-color: #94ecef8c;
+            border: black 1px solid;
+            margin: 6vh 0;
+        }
+        .post{
+            display: flex;
+            flex-direction: column;
+            width: 18vw;
+            height: 10vw;
+            background-color: #aff5f5;
+            text-align: center;
+            justify-content: space-between;
+            padding: 1vw 0;
+            border: black 0.5px solid;
+        }
+        .button{
+            display: flex;
+            justify-content: center;
+        }
+        button{
+            width: 90vw;
+            height: 40px;
+            font-size: 30px;
+            background-color: #7ccece;
+            border: none;
+            bottom:0;
+            left:0;
+        }
+        button:hover{
+            background-color: #239d9d;
+        }
+    </style>
+</head>
+<body>
+<div class="button">
+<button> Back to users</button>
+    </div>
+<script>
+
+let userId = new URL(location.href).searchParams.get('id');
+let baseUrl = 'http://jsonplaceholder.typicode.com/users/' + userId;
+
+fetch(baseUrl)
+    .then((user)=>user.json())
+    .then(user=> {
+
+        let allInfo = document.createElement('div');
+        document.body.appendChild(allInfo)
+        allInfo.classList.add('main')
+
+function getElement(obj,destEl) {
+
+    let ul = new UlLi(destEl);
+
+    for (const objKey in obj) {
+
+        if (typeof obj[objKey] === 'object') {
+            let li = ul.addLi(objKey)
+            getElement(obj[objKey],li);
+        }else{
+            ul.addLi(`${objKey}: ${obj[objKey]}`)
+        }
+    }
+}
+getElement(user,allInfo);
+
+        let button = document.createElement('button');
+        button.innerText = 'post of current user';
+        allInfo.appendChild(button);
+        button.onclick = getposts;
+
+        function getposts (){
+
+                let urlPost= baseUrl+'/posts'
+
+                fetch(urlPost)
+                    .then((posts)=>posts.json())
+                    .then(posts=>{
+
+                        let blockforPosts = document.createElement('div');
+                        blockforPosts.classList.add('posts')
+                        document.body.appendChild(blockforPosts)
+
+                        for (const post of posts) {
+                            let divForPost = document.createElement('div');
+                            divForPost.classList.add('post')
+                            blockforPosts.appendChild(divForPost);
+
+                            let title = document.createElement('p');
+                            divForPost.appendChild(title);
+                            title.innerText = post.title;
+
+                            let infoPost = document.createElement('a');
+                            infoPost.href = `post-details.html?id=${userId}&postId=${post.id}`;
+                            infoPost.innerText = 'Post info';
+                            divForPost.appendChild(infoPost)
+                        }
+                    })
+            }
+        }
+    )
+let backButton = document.getElementsByTagName('button')[0];
+backButton.onclick = function (){
+    window.location.href = 'index.html';
+}
+
+</script>
+</body>
+</html>

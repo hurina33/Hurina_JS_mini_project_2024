@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>post-details.html</title>
+    <script src="UlLi.js"></script>
+    <style>
+        body{
+            margin: 0;
+        }
+        .info{
+            display: flex;
+            background-color: #aff5f5;
+            align-items: center;
+            justify-content: center;
+            font-size: 2vw;
+        }
+        .comments-block{
+            display: flex;
+            flex-wrap:wrap ;
+            background-color: #aff5f5;
+            align-items: flex-start;
+            justify-content: space-evenly;
+        }
+        .comment-element{
+            font-size: 1vw;
+            border: black 1px solid;
+            width: 24vw;
+            text-overflow: ellipsis;
+            overflow: auto;
+            height: 25vh;
+            margin: 1vw 0;
+        }
+
+        button{
+            width: 100vw;
+            font-size: 20px;
+            background-color: #7ccece;
+            border: none;
+            bottom:0;
+            left:0;
+        }
+        button:hover{
+            background-color: #239d9d;
+        }
+    </style>
+</head>
+<body>
+
+<button>Back</button>
+
+<script>
+
+    let postId = new URL(location.href).searchParams.get('postId')
+    let baseUrl = 'http://jsonplaceholder.typicode.com/posts/'+postId;
+
+
+
+    fetch(baseUrl)
+        .then((post)=>post.json())
+        .then(post=> {
+
+            let info = new UlLi(document.body);
+            info.addClass('info');
+            for (const key in post) {
+                info.addLi(`${key}: ${post[key]}`);
+            }
+            info.addButton ( 'Comments');
+        })
+
+ setTimeout(function getComments () {
+        let commentsUrl = `${baseUrl}/comments`;
+
+       fetch(commentsUrl)
+            .then((comments)=>comments.json())
+            .then(comments => {
+
+                let blockForComment = document.createElement('div');
+                document.body.appendChild(blockForComment);
+                blockForComment.classList.add('comments-block')
+
+                for (const comment of comments) {
+
+                    let commentfor =new UlLi(blockForComment);
+                    commentfor.addClass('comment-element');
+                    for (const key in comment) {
+                        commentfor.addLi(`${key}: ${comment[key]}`)
+                    }
+                }
+            })
+    },1000)
+
+    let backButton = document.getElementsByTagName('button')[0];
+    backButton.onclick = function (){
+        let userId = new URL(location.href).searchParams.get('id');
+        window.location.href = 'user-details.html?id='+userId;
+    }
+
+
+</script>
+</body>
+</html>
